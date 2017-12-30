@@ -1,6 +1,6 @@
 
 # coding: utf-8
-
+import os
 def print_menu():
     print "Bienvenue ! Vous venez d'entrer dans un nouveau monde, celui de la cryptographie ! 'whouaaa'"
     print "Ce petit script vous permettra d'utiliser 2 chiffrements et une fonction de hashage."
@@ -21,8 +21,31 @@ while loop:
     choix = input("\nSaisir le numéro de la fonction choisie [1-7] : ")
 
     if choix==1:
-        print " -> Chiffrement symétrique ThreeFish choisi, suivez le guide ><(((> ..."
-        ## fonction ThreeFish en mode chiffrement
+        print " -> Chiffrement symétrique ThreeFish choisi, suivez le guide ><(((º> ..."
+        print "Pour effectuer le chiffrement, il nous faut une taille de blocs pour effectuer ce chiffrement"
+        taille = True
+        while taille:
+            tailleBlocs = input("Vous pouvez choisir entre 256, 512 ou 1024 bits : ")
+            if tailleBlocs == 256:
+                print "256 blocs choisis"
+                taille = False
+            elif tailleBlocs == 512:
+                print "512 blocs choisis"
+                taille = False
+            elif tailleBlocs == 1024:
+                print("1024 bits choisis pour ")
+                tailleBlocs = False
+            else:
+                print "Il semblerait que le choix entre 256, 512 ou 1024 ait été trop compliqué, veuillez réessayer"
+        print tailleBlocs
+        with open(os.path.expanduser("~/Desktop/myfile.rtf"), "rb") as file:
+            byte = file.read(1)
+            while byte != "":
+                # Do stuff with byte.
+                byte = file.read(1)
+                bits = int(byte) >> 8,
+                print bits,
+
     elif choix==2:
         print " -> Chiffrement de Cramer-Shoup choisi, ..."
         ## fonction Cramer-Shoup en mode chiffrement
@@ -43,6 +66,7 @@ while loop:
         loop=False
     else:
         raw_input("---ERROR--ERROR--ERROR---\nCette option n'existe pas, veuillez appuyer sur une touche pour continuer...")
+
 
 
 
