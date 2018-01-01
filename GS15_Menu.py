@@ -1,6 +1,7 @@
 
 # coding: utf-8
 import os
+import sys
 def print_menu():
     print ""
     print "Bienvenue ! Vous venez d'entrer dans un nouveau monde, celui de la cryptographie ! 'whouaaa'"
@@ -38,20 +39,47 @@ while loop:
                 tailleBlocs = False
             else:
                 print "Il semblerait que le choix entre 256, 512 ou 1024 ait été trop compliqué, veuillez réessayer"
-        print "Vous avez choisi des blocs de " + tailleBlocs + " bits"
-        
+        print "Vous avez choisi des blocs de"+str(tailleBlocs)+" bits"
+
+        myList = []
         with open(os.path.expanduser("~/Desktop/myfile.rtf"), "rb") as file:
             byte = file.read(1)
+            compteur = 0
+            compteurComplet = 0
             while byte != "":
                 # Do stuff with byte.
                 byte = file.read(1)
-                #Encodage en hexadecimal
-                print byte.encode('hex'),
-                print ", ",
-                #Encodage en binaire puis
+#Encodage en hexadecimal=========================
+                #print byte.encode('hex'),
+                #print ", ",
+#Encodage en hexadecimal=========================
+
+                #Encodage en binaire
                 if byte.encode('hex') != '':
-                    print bin(int(byte.encode('hex'), 16))[2:].zfill(8),
-                    print "  |  ",
+                    binaire = bin(int(byte.encode('hex'), 16))[2:].zfill(8)
+                    #print "Binaire = " + str(binaire)
+                    #print "Compteur = " + str(compteur)
+                    if compteur != 0:
+                        if len(str(myList[compteur-1])) == 64:
+                            #print "Longueur : " + str(myList[compteur-1])
+                            myList.append(str(binaire))
+                            compteur +=1
+                        else:
+                            myList[compteur-1] = str(myList[compteur-1])+str(binaire)
+                    else:
+                        myList.insert(compteur, binaire)
+                        #print "ELSE : "+str(myList[compteur])
+                        compteur += 1
+#Test lecture fichier=============================
+                #print binaire
+                #print "  |  ",
+                sys.stdout.write(binaire)
+#Test lecture fichier=============================
+        print "================"
+        for i in range(len(myList)):
+            #print myList[i],
+            sys.stdout.write(myList[i])
+
     elif choix==2:
         print " -> Chiffrement de Cramer-Shoup choisi, ..."
         ## fonction Cramer-Shoup en mode chiffrement
