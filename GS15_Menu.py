@@ -2,6 +2,7 @@
 # coding: utf-8
 import os
 def print_menu():
+    print ""
     print "Bienvenue ! Vous venez d'entrer dans un nouveau monde, celui de la cryptographie ! 'whouaaa'"
     print "Ce petit script vous permettra d'utiliser 2 chiffrements et une fonction de hashage."
     print "Son fonctionnement est très simple... Dans le menu suivant, il vous suffit de choisir la fonction désirée et de se laisser guider... Bon voyage !\n"
@@ -37,15 +38,20 @@ while loop:
                 tailleBlocs = False
             else:
                 print "Il semblerait que le choix entre 256, 512 ou 1024 ait été trop compliqué, veuillez réessayer"
-        print tailleBlocs
+        print "Vous avez choisi des blocs de " + tailleBlocs + " bits"
+        
         with open(os.path.expanduser("~/Desktop/myfile.rtf"), "rb") as file:
             byte = file.read(1)
             while byte != "":
                 # Do stuff with byte.
                 byte = file.read(1)
-                bits = int(byte) >> 8,
-                print bits,
-
+                #Encodage en hexadecimal
+                print byte.encode('hex'),
+                print ", ",
+                #Encodage en binaire puis
+                if byte.encode('hex') != '':
+                    print bin(int(byte.encode('hex'), 16))[2:].zfill(8),
+                    print "  |  ",
     elif choix==2:
         print " -> Chiffrement de Cramer-Shoup choisi, ..."
         ## fonction Cramer-Shoup en mode chiffrement
