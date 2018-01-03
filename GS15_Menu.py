@@ -78,18 +78,26 @@ def genererCles(tailleBlocs):
         while compteurN <= N-4:
             cleDeTournee.append(str(cleK[(compteurI + compteurN) % (N + 1)]))
             compteurN += 1
-
         #Pour le bloc n  = N-3
-        resultatTemporel = int(tweaks[compteurI%3], 2) ^ int(cleK[(compteurI+compteurN) % (N+1)], 2)
-        cleDeTournee.append(bin(resultatTemporel)[2:].zfill(64))
+        resultatTemporel = bin(int(tweaks[compteurI%3], 2) + int(cleK[(compteurI+compteurN) % (N+1)], 2))
+        if len(resultatTemporel) <= 66:
+            cleDeTournee.append(bin(int(resultatTemporel,2))[2:].zfill(64))
+        elif len(resultatTemporel) > 66:
+            cleDeTournee.append(bin(int(resultatTemporel,2))[len(resultatTemporel)-64:].zfill(64))
 
         #Pour le bloc n = N-2
-        resultatTemporel = int(tweaks[(compteurI+1)%3], 2) ^ int(cleK[(compteurI+compteurN) % (N+1)], 2)
-        cleDeTournee.append(bin(resultatTemporel)[2:].zfill(64))
+        resultatTemporel = bin(int(tweaks[(compteurI+1)%3], 2) + int(cleK[(compteurI+compteurN) % (N+1)], 2))
+        if len(resultatTemporel) <= 66:
+            cleDeTournee.append(bin(int(resultatTemporel,2))[2:].zfill(64))
+        elif len(resultatTemporel) > 66:
+            cleDeTournee.append(bin(int(resultatTemporel,2))[len(resultatTemporel)-64:].zfill(64))
 
         #Pour le bloc n = N-1
-        resultatTemporel = int(str(compteurI), 10) ^ int(cleK[(compteurI+compteurN) % (N+1)], 2)
-        cleDeTournee.append(bin(resultatTemporel)[2:].zfill(64))
+        resultatTemporel = bin(int(str(compteurI), 10) + int(cleK[(compteurI+compteurN) % (N+1)], 2))
+        if len(resultatTemporel) <= 66:
+            cleDeTournee.append(bin(int(resultatTemporel,2))[2:].zfill(64))
+        elif len(resultatTemporel) > 66:
+            cleDeTournee.append(bin(int(resultatTemporel,2))[len(resultatTemporel)-64:].zfill(64))
 
         tableauClesDeTournee.append(cleDeTournee)
 
@@ -164,6 +172,17 @@ while loop:
     choix = input("\nSaisir le numéro de la fonction choisie [1-7] : ")
 
     if choix == 1:
+        '''
+        a='1010001010101101010101011010101010110101010101101010101011010101'
+        b='1101011101011010101001001010010110100010101010101101111101001010'
+        print(len(a))
+        resultatTemporel = bin(int(a, 2) ^ int(b, 2))
+        print(len(resultatTemporel))
+        print str(resultatTemporel)
+        resultatTemporel = str(resultatTemporel[3:].zfill(10))
+        print resultatTemporel
+        print "=========="
+        '''
         mainThreeFishChiffrement()
 
     elif choix == 2:
