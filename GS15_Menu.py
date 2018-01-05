@@ -36,10 +36,10 @@ def genererCles(t0, t1, cleKString, tailleBlocs):
             b = random.randint(0,1)
             t1 = str(t1)+str(b)
 
-    t2 = int(t0, 2) ^ int(t1, 2)
-    tweaks.append(t0)
-    tweaks.append(t1)
-    tweaks.append(bin(t2)[2:].zfill(64))
+    t2 = bin(int(t0, 2) ^ int(t1, 2))[2:].zfill(64)
+    tweaks.append(bin(int(t0, 2))[2:].zfill(64))
+    tweaks.append(bin(int(t1, 2))[2:].zfill(64))
+    tweaks.append(t2)
     for i in range(len(tweaks)):
         print "T" + str(i) + " = " + str(tweaks[i])
 
@@ -59,10 +59,6 @@ def genererCles(t0, t1, cleKString, tailleBlocs):
                 cleK[i] = cleK[i]+cleKString[(63*i)+i+j]
         print len(cleK)
 
-        print("--")
-        for i in range(len(cleK)):
-            print(cleK[i])
-
     kN = "0"
     for i in range(len(cleK)):
         kN = int(str(kN), 10) ^ int(cleK[i], 2)
@@ -71,10 +67,10 @@ def genererCles(t0, t1, cleKString, tailleBlocs):
 
     cleK.append(bin(kN)[2:].zfill(64))
 
-    print("Clé finale (A CONSERVER) : "),
+    print("Clé finale (A CONSERVER) : ")
     for i in range(len(cleK)):
-        #print cleK[i]
-        sys.stdout.write(cleK[i])
+        print cleK[i]
+        #sys.stdout.write(cleK[i])
     print ""
 
     N = tailleBlocs/64
@@ -89,24 +85,24 @@ def genererCles(t0, t1, cleKString, tailleBlocs):
             compteurN += 1
         #Pour le bloc n  = N-3
         resultatTemporel = bin(int(tweaks[compteurI%3], 2) + int(cleK[(compteurI+compteurN) % (N+1)], 2))
-        if len(resultatTemporel) <= 66:
-            cleDeTournee.append(bin(int(resultatTemporel,2))[2:].zfill(64))
-        elif len(resultatTemporel) > 66:
-            cleDeTournee.append(bin(int(resultatTemporel,2))[len(resultatTemporel)-64:].zfill(64))
+        if(int(resultatTemporel, 2) >= 2**64):
+            cleDeTournee.append(bin(int(resultatTemporel, 2)- 2**64)[2:].zfill(64))
+        else:
+            cleDeTournee.append(bin(int(resultatTemporel, 2))[2:].zfill(64))
 
         #Pour le bloc n = N-2
         resultatTemporel = bin(int(tweaks[(compteurI+1)%3], 2) + int(cleK[(compteurI+compteurN) % (N+1)], 2))
-        if len(resultatTemporel) <= 66:
-            cleDeTournee.append(bin(int(resultatTemporel,2))[2:].zfill(64))
-        elif len(resultatTemporel) > 66:
-            cleDeTournee.append(bin(int(resultatTemporel,2))[len(resultatTemporel)-64:].zfill(64))
+        if(int(resultatTemporel, 2) >= 2**64):
+            cleDeTournee.append(bin(int(resultatTemporel, 2)- 2**64)[2:].zfill(64))
+        else:
+            cleDeTournee.append(bin(int(resultatTemporel, 2))[2:].zfill(64))
 
         #Pour le bloc n = N-1
         resultatTemporel = bin(int(str(compteurI), 10) + int(cleK[(compteurI+compteurN) % (N+1)], 2))
-        if len(resultatTemporel) <= 66:
-            cleDeTournee.append(bin(int(resultatTemporel,2))[2:].zfill(64))
-        elif len(resultatTemporel) > 66:
-            cleDeTournee.append(bin(int(resultatTemporel,2))[len(resultatTemporel)-64:].zfill(64))
+        if(int(resultatTemporel, 2) >= 2**64):
+            cleDeTournee.append(bin(int(resultatTemporel, 2)- 2**64)[2:].zfill(64))
+        else:
+            cleDeTournee.append(bin(int(resultatTemporel, 2))[2:].zfill(64))
 
         tableauClesDeTournee.append(cleDeTournee)
 
@@ -120,20 +116,9 @@ def genererCles(t0, t1, cleKString, tailleBlocs):
 
     return tableauClesDeTournee
 
-def chiffrementThreeFish(tableauClesDeTournee, tableauMotsFichier, tailleBlocs):
-    #print("===================================CLEFS DE TOURNEE==================================")
-    #for i in range(len(tableauClesDeTournee)):
-    #    print("CLE " + str(i) + " : ")
-    #    for j in range(len(tableauClesDeTournee[i])):
-    #        print tableauClesDeTournee[i][j]
-    #print("=====================================MOTS FICHIER====================================")
-    #for i in range(len(tableauMotsFichier)):
-    #    print tableauMotsFichier[i]
-
-    tableauMotsFichierMixe = []
-    tableauMotsFichierPermutation = []
-
-    # Mise en place de blocs de taille adécuate
+def utilitaires():
+    print("hello")
+        # Mise en place de blocs de taille adécuate
     '''
     for i in range(0, 20, 1):
         cledeTournee = ""
@@ -161,23 +146,34 @@ def chiffrementThreeFish(tableauClesDeTournee, tableauMotsFichier, tailleBlocs):
     #for i in range(len(tableauMotsFichiertailleBloc)):
     #    print(tableauMotsFichiertailleBloc[i])
 
-    #print("=========Tableau premiere tournée==========")
-    for i in range(len(tableauMotsFichier)):
-        tableauMotsFichierMixe.append(bin(int(tableauMotsFichier[i], 2) ^ int(tableauClesDeTournee[0][i%(tailleBlocs/64)], 2))[2:].zfill(64))
     #print("LENGTH ORIGINAL: "+str(len(tableauMotsFichier)))
     #for i in range(len(tableauMotsFichierMixe)):
     #    print(tableauMotsFichierMixe[i])
 
-    #print len(tableauMotsFichier)
-    #print len(tableauMotsFichierMixe)
+def chiffrementThreeFish(tableauClesDeTournee, tableauMotsFichier, tailleBlocs):
+
+    tableauMotsFichierMixe = []
+    tableauMotsFichierPermutation = []
+
+    for i in range(len(tableauMotsFichier)):
+        tableauMotsFichierMixe.append(bin(int(tableauMotsFichier[i], 2) ^ int(tableauClesDeTournee[0][i%(tailleBlocs/64)], 2)))
+
     for y in range(0, 20, 1):
         for z in range(0, 4, 1):
             #MIXAGE
 
             for i in range(0, len(tableauMotsFichier), 2):
                 if i != len(tableauMotsFichier)-1:
-                    resultatTemporel = bin(int(tableauMotsFichierMixe[i], 2) + int(tableauMotsFichierMixe[i+1], 2))[2:]
-                    #print(len(resultatTemporel))
+
+                    resultatTemporel = bin(int(tableauMotsFichierMixe[i], 2) + int(tableauMotsFichierMixe[i+1], 2))
+
+                    tmpi = resultatTemporel
+                    if int(resultatTemporel,2) >= 2**64:
+                        tmpi = bin(int(resultatTemporel, 2) - 2**64).zfill(64)
+
+                    print("Resultat tempi: " + str(int(tmpi, 2)))
+
+                    print("-+-"+str(len(resultatTemporel)))
                     if len(resultatTemporel) <= 64:
                         m1primme = bin(int(resultatTemporel, 2))[2:].zfill(64)
                         tableauMotsFichierPermutation.append(m1primme)
@@ -234,6 +230,14 @@ def chiffrementThreeFish(tableauClesDeTournee, tableauMotsFichier, tailleBlocs):
 
 def dechiffrementThreeFish(tableauClesDeTournee, tableauMotsFichier, tailleBlocs):
     print("hello")
+
+    tableauMotsFichierMixe = []
+    tableauMotsFichierPermutation = []
+
+    #Première permutation
+    for i in range(len(tableauMotsFichier)):
+        tableauMotsFichierMixe.append(bin(int(tableauMotsFichier[i], 2) ^ int(tableauClesDeTournee[19][i%(tailleBlocs/64)], 2))[2:].zfill(64))
+
 
 
 def lectureFichier(path):
