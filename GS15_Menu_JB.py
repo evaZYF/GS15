@@ -540,8 +540,8 @@ def encrypt():
         m = lectureFichier()
         n = len(m)
 
-        print "Écriture des informations du message chiffré dans le fichier 'message.enc'"
-        f = open("message.enc", "w")
+    with open(raw_input("Saisir le nom du fichier chiffré : "), 'w') as f:
+        print "Écriture des informations du message à chiffrer en cours, veuillez patienter..."
         f.write("==========ENCRYPTED MESSAGE==========\n")
         f.write("n:" + str(n) + "\n")
         for i in range(0, n):
@@ -596,8 +596,8 @@ def decrypt():
         temp = chiffre.readlines()
         n = int(temp[1].split(":")[1])
         ind_l = 3
-        f = open("message.dec", "w")
-        f.write("==========DECRYPTED MESSAGE==========\n")
+    with open(raw_input("Saisir le nom du fichier final : "), 'w') as f:
+        # f.write("==========DECRYPTED MESSAGE==========\n")
         for i in range(0, n):
             b1 = int(temp[ind_l].split(":")[1])
             ind_l += 1
@@ -620,10 +620,15 @@ def decrypt():
             if v == v2:
                 print "Vérification réussie, déchiffrement du bloc " + str(i + 1) + " en cours..."
                 m = (modinv(powmod(b1, w, p), p) * c) % p
-                m = hex(m)[2:-1].decode("hex")
-                f.write(str(m))
-            ind_l += 3
-        f.write("\n==========END==========")
+                if len(hex(m)[2:-1]) % 2 != 0:
+                    m = hex(m)[2:-1].zfill(len(hex(m)[2:-1]) + 1)
+                    m = m.decode("hex")
+                    f.write(str(m))
+                else:
+                    m = hex(m)[2:-1].decode("hex")
+                    f.write(str(m))
+                ind_l += 3
+        # f.write("\n==========END==========")
         f.close()
         priv.close()
         chiffre.close()
