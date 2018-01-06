@@ -60,13 +60,12 @@ def genererCles(t0, t1, cleKString, tailleBlocs):
             cleK.append(cleKString[(63*i)+i])
             for j in range(1, 64, 1):
                 cleK[i] = cleK[i]+cleKString[(63*i)+i+j]
-        print len(cleK)
 
     kN = "0"
     for i in range(len(cleK)):
         kN = int(str(kN), 10) ^ int(cleK[i], 2)
     kN = int(str(kN), 10) ^ int(C, 2)
-    print("k"+str(tailleBlocs/64)+" = " + str(bin(kN)[2:].zfill(64)))
+    #print("k"+str(tailleBlocs/64)+" = " + str(bin(kN)[2:].zfill(64)))
 
     cleK.append(bin(kN)[2:].zfill(64))
 
@@ -75,7 +74,7 @@ def genererCles(t0, t1, cleKString, tailleBlocs):
         #print cleK[i]
         sys.stdout.write(cleK[i])
     print ""
-
+    print "---"
     N = tailleBlocs/64
     tableauClesDeTournee = []
     for compteurI in range(0, 20, 1):
@@ -157,18 +156,16 @@ def chiffrementThreeFish(tableauClesDeTournee, tableauMotsFichier, tailleBlocs):
 
     tableauMotsFichierMixe = []
     tableauMotsFichierPermutation = []
-    print("!!!!!! TAILLE DERNIER BLOC !!!!!! = "+str(len(tableauMotsFichier[len(tableauMotsFichier)-1])))
-
+    print("Taille dernier bloc = "+str(len(tableauMotsFichier[len(tableauMotsFichier)-1])))
+    print("============================================================")
+    print("============================================================")
+    print("============================================================")
     for i in range(len(tableauMotsFichier)):
         tableauMotsFichierMixe.append(bin(int(tableauMotsFichier[i], 2) ^ int(tableauClesDeTournee[0][i%(tailleBlocs/64)], 2))[2:].zfill(64))
-        print("--------")
-        print(tableauMotsFichier[i])
-        print("Hash fichier original : "+str(hashlib.sha224(str(tableauMotsFichier[i])).hexdigest()))
-        print("--------")
     for y in range(1, 20, 1):
 
-        print("---y = "+str(y)+" ---")
-        print("Hash pré permutation : "+str(hashlib.sha224(str(tableauMotsFichierMixe)).hexdigest()))
+        #print("---y = "+str(y)+" ---")
+        #print("Hash pré permutation : "+str(hashlib.sha224(str(tableauMotsFichierMixe)).hexdigest()))
 
         for z in range(0, 4, 1):
 
@@ -233,14 +230,9 @@ def dechiffrementThreeFish(tableauClesDeTournee, tableauMotsFichier, tailleBlocs
 
     #Première permutation
     for i in range(len(tableauMotsFichier)):
-        print(i)
         tableauMotsFichierPermutation.append(bin(int(tableauMotsFichier[i], 2) ^ int(tableauClesDeTournee[19][i%(tailleBlocs/64)], 2))[2:].zfill(64))
 
-    print("Hash pre permutation: "+str(hashlib.sha224(str(tableauMotsFichierPermutation)).hexdigest()))
-
     for y in range(18, -1, -1):
-
-        print("---y = "+str(y)+" ---")
 
         for z in range(0, 4, 1):
 
@@ -252,7 +244,6 @@ def dechiffrementThreeFish(tableauClesDeTournee, tableauMotsFichier, tailleBlocs
             tableauMotsFichierPermutation = []
 
             for i in range(0, len(tableauMotsFichier), 2):
-
                 if i != len(tableauMotsFichier)-1:
                     m2R = bin(int(tableauMotsFichierMixe[i], 2) ^ int(tableauMotsFichierMixe[i+1], 2))[2:].zfill(64)
 
@@ -273,22 +264,15 @@ def dechiffrementThreeFish(tableauClesDeTournee, tableauMotsFichier, tailleBlocs
                 else:
                     tableauMotsFichierPermutation.append(tableauMotsFichierMixe[i])
 
-        print("Hash post insertion: "+str(hashlib.sha224(str(tableauMotsFichierPermutation)).hexdigest()))
-
         tableauMotsFichierMixe2 = []
 
         if y == 0:
             for i in range(len(tableauMotsFichier)):
                 if i != len(tableauMotsFichier)-1:
-                    print(i)
                     tableauMotsFichierMixe2.append(bin(int(tableauMotsFichierPermutation[i], 2) ^ int(tableauClesDeTournee[y][i%(tailleBlocs/64)], 2))[2:].zfill(64))
-                    print(bin(int(tableauMotsFichierPermutation[i], 2) ^ int(tableauClesDeTournee[y][i%(tailleBlocs/64)], 2))[2:].zfill(64))
-                    print("Hash fichier original PRAY : "+str(hashlib.sha224(str(tableauMotsFichierMixe2[i])).hexdigest()))
 
                 else:
                     tableauMotsFichierMixe2.append(bin(int(tableauMotsFichierPermutation[i], 2) ^ int(tableauClesDeTournee[y][i%(tailleBlocs/64)], 2))[2:].zfill(int(tailleDernierBloc)))
-                    print(bin(int(tableauMotsFichierPermutation[i], 2) ^ int(tableauClesDeTournee[y][i%(tailleBlocs/64)], 2))[2:].zfill(int(tailleDernierBloc)))
-                    print("Hash fichier original PRAYFIN : "+str(hashlib.sha224(str(tableauMotsFichierMixe2[i])).hexdigest()))
 
             tableauMotsFichierPermutation = tableauMotsFichierMixe2
         else:
@@ -331,6 +315,7 @@ def lectureFichier(path):
         compteur = 0
         while True:
             byte = file.read(1)
+            #print(byte.encode('hex'))
             if byte.encode('hex') == '':
                 break
             if byte.encode('hex') != '':
@@ -345,8 +330,56 @@ def lectureFichier(path):
                 else:
                     motsFichier.insert(compteur, binaire)
                     compteur += 1
+    file.close()
 
-    print("Hash fichier original : "+str(hashlib.sha224(str(motsFichier)).hexdigest()))
+    print("FICHIER OUVERT : ")
+    for i in range(len(motsFichier)):
+        sys.stdout.write(motsFichier[i])
+    print("")
+    print("Hash fichier ouvert : "+str(hashlib.sha224(str(motsFichier)).hexdigest()))
+
+
+    f = open(os.path.expanduser("~/Desktop/myfileWRITTEN.rtf"), "wb")
+
+    for i in range(len(motsFichier)):
+        print("hello"+str(i))
+        for j in range(0, 8, 1):
+            if(motsFichier[i][j*8:(j*8)+8] != ""):
+                byte = hex(int(motsFichier[i][j*8:(j*8)+8], 2))
+                #byte = bin(int(motsFichier[i], 2)).encode('hex')[j*8:(j*8)+8]
+                f.write(byte[2:].decode('hex'))
+            else:
+                f.write("")
+    f.close()
+
+    motsFichier = []
+    with open(os.path.expanduser(str("~/Desktop/myfileWRITTEN.rtf")), "rb") as file2:
+        compteur = 0
+        print compteur
+        while True:
+            byte = file2.read(1)
+            if byte.encode('hex') == '':
+                break
+            if byte.encode('hex') != '':
+                binaire = bin(int(byte.encode('hex'), 16))[2:].zfill(8)
+
+                if compteur != 0:
+                    if len(str(motsFichier[compteur - 1])) == 64:
+                        motsFichier.append(str(binaire))
+                        compteur += 1
+                    else:
+                        motsFichier[compteur - 1] = str(motsFichier[compteur - 1]) + str(binaire)
+                else:
+                    motsFichier.insert(compteur, binaire)
+                    compteur += 1
+    file2.close()
+
+    print("FICHIER GENERE")
+    print(len(motsFichier))
+    for i in range(len(motsFichier)):
+        sys.stdout.write(motsFichier[i])
+    print("")
+    print("Hash fichier genere : "+str(hashlib.sha224(str(motsFichier)).hexdigest()))
 
     return motsFichier
 
@@ -374,9 +407,11 @@ def mainThreeFishChiffrement():
 
     print "Vous avez choisi des blocs de " + str(tailleBlocs) + " bits"
 
-    tableaufichierChiffre = chiffrementThreeFish(genererCles("", "", "", tailleBlocs), lectureFichier("~/Desktop/myfile2.png"), tailleBlocs)
+    lectureFichier("~/Desktop/myfile.rtf")
 
-    mainThreeFishDechiffrement(tableaufichierChiffre)
+    #tableaufichierChiffre = chiffrementThreeFish(genererCles("", "", "", tailleBlocs), lectureFichier("~/Desktop/myfile.rtf"), tailleBlocs)
+
+    #mainThreeFishDechiffrement(tableaufichierChiffre)
 
 def mainThreeFishDechiffrement(tableaufichierChiffre):
     print " -> Déchiffrement ThreeFish ><(((º> ..."
@@ -449,19 +484,16 @@ while loop:
         print(hashlib.sha224(str(testarray)).hexdigest())
         '''
         m2R = "0001011000111010011100010001101101011010011100000110100001110111"
-        for j in range(0, 5, 1):
-            m2Rchar = m2R[63]
-            m2R = m2Rchar + m2R[:63]
 
-        print(m2R)
+        print(m2R[8:16])
 
         a = "01011"
-        print (bin(int(a, 2)))
+        #print (bin(int(a, 2)))
 
-        resultat = bin(int("0101010101100101010101101010101010110111111010101010110111111111", 2) ^ int("0111011101110111011001110111011011011101101110111011101101101101", 2))[2:].zfill(64)
-        print(resultat)
-        resultat2 = bin(int("0101010101100101010101101010101010110111111010101010110111111111", 2) ^ int(resultat, 2))[2:].zfill(64)
-        print(resultat2)
+        #resultat = bin(int("0101010101100101010101101010101010110111111010101010110111111111", 2) ^ int("0111011101110111011001110111011011011101101110111011101101101101", 2))[2:].zfill(64)
+        #print(resultat)
+        #resultat2 = bin(int("0101010101100101010101101010101010110111111010101010110111111111", 2) ^ int(resultat, 2))[2:].zfill(64)
+        #print(resultat2)
 
         mainThreeFishChiffrement()
         #genererCles("0101001111010010001111110001100110000001010111111000001101001111", "0100011101001110001011010010000100110011101000000011000101100110", "10010111100101000111110111110001011111100011110000101000101010100001100110101110101000100101001011111100101011011110010010100001110010011011010111001001100000010011010110010011001001001001010110111101011101001001101010110110101101011000011010001011111001011110000100101010100101110100111010101011011110000111100101011001", 256)
