@@ -40,6 +40,9 @@ def genererCles(t0, t1, cleKString, tailleBlocs):
     tweaks.append(bin(int(t0, 2))[2:].zfill(64))
     tweaks.append(bin(int(t1, 2))[2:].zfill(64))
     tweaks.append(t2)
+    print("============================================================")
+    print("ELEMENTS À CONSERVER : =====================================")
+    print("============================================================")
     for i in range(len(tweaks)):
         print "T" + str(i) + " = " + str(tweaks[i])
 
@@ -67,10 +70,10 @@ def genererCles(t0, t1, cleKString, tailleBlocs):
 
     cleK.append(bin(kN)[2:].zfill(64))
 
-    print("Clé finale (A CONSERVER) : ")
+    print("Clé finale : "),
     for i in range(len(cleK)):
-        print cleK[i]
-        #sys.stdout.write(cleK[i])
+        #print cleK[i]
+        sys.stdout.write(cleK[i])
     print ""
 
     N = tailleBlocs/64
@@ -86,21 +89,21 @@ def genererCles(t0, t1, cleKString, tailleBlocs):
         #Pour le bloc n  = N-3
         resultatTemporel = bin(int(tweaks[compteurI%3], 2) + int(cleK[(compteurI+compteurN) % (N+1)], 2))
         if(int(resultatTemporel, 2) >= 2**64):
-            cleDeTournee.append(bin(int(resultatTemporel, 2)- 2**64)[2:].zfill(64))
+            cleDeTournee.append(bin(int(resultatTemporel, 2) - 2**64)[2:].zfill(64))
         else:
             cleDeTournee.append(bin(int(resultatTemporel, 2))[2:].zfill(64))
 
         #Pour le bloc n = N-2
         resultatTemporel = bin(int(tweaks[(compteurI+1)%3], 2) + int(cleK[(compteurI+compteurN) % (N+1)], 2))
         if(int(resultatTemporel, 2) >= 2**64):
-            cleDeTournee.append(bin(int(resultatTemporel, 2)- 2**64)[2:].zfill(64))
+            cleDeTournee.append(bin(int(resultatTemporel, 2) - 2**64)[2:].zfill(64))
         else:
             cleDeTournee.append(bin(int(resultatTemporel, 2))[2:].zfill(64))
 
         #Pour le bloc n = N-1
         resultatTemporel = bin(int(str(compteurI), 10) + int(cleK[(compteurI+compteurN) % (N+1)], 2))
         if(int(resultatTemporel, 2) >= 2**64):
-            cleDeTournee.append(bin(int(resultatTemporel, 2)- 2**64)[2:].zfill(64))
+            cleDeTournee.append(bin(int(resultatTemporel, 2) - 2**64)[2:].zfill(64))
         else:
             cleDeTournee.append(bin(int(resultatTemporel, 2))[2:].zfill(64))
 
@@ -154,33 +157,31 @@ def chiffrementThreeFish(tableauClesDeTournee, tableauMotsFichier, tailleBlocs):
 
     tableauMotsFichierMixe = []
     tableauMotsFichierPermutation = []
+    print("!!!!!! TAILLE DERNIER BLOC !!!!!! = "+str(len(tableauMotsFichier[len(tableauMotsFichier)-1])))
 
     for i in range(len(tableauMotsFichier)):
-        tableauMotsFichierMixe.append(bin(int(tableauMotsFichier[i], 2) ^ int(tableauClesDeTournee[0][i%(tailleBlocs/64)], 2)))
+        tableauMotsFichierMixe.append(bin(int(tableauMotsFichier[i], 2) ^ int(tableauClesDeTournee[0][i%(tailleBlocs/64)], 2))[2:].zfill(64))
+        print("--------")
+        print(tableauMotsFichier[i])
+        print("Hash fichier original : "+str(hashlib.sha224(str(tableauMotsFichier[i])).hexdigest()))
+        print("--------")
+    for y in range(1, 20, 1):
 
-    for y in range(0, 20, 1):
+        print("---y = "+str(y)+" ---")
+        print("Hash pré permutation : "+str(hashlib.sha224(str(tableauMotsFichierMixe)).hexdigest()))
+
         for z in range(0, 4, 1):
-            #MIXAGE
 
+            #MIXAGE
             for i in range(0, len(tableauMotsFichier), 2):
                 if i != len(tableauMotsFichier)-1:
-
                     resultatTemporel = bin(int(tableauMotsFichierMixe[i], 2) + int(tableauMotsFichierMixe[i+1], 2))
-
-                    tmpi = resultatTemporel
-                    if int(resultatTemporel,2) >= 2**64:
-                        tmpi = bin(int(resultatTemporel, 2) - 2**64).zfill(64)
-
-                    print("Resultat tempi: " + str(int(tmpi, 2)))
-
-                    print("-+-"+str(len(resultatTemporel)))
-                    if len(resultatTemporel) <= 64:
-                        m1primme = bin(int(resultatTemporel, 2))[2:].zfill(64)
-                        tableauMotsFichierPermutation.append(m1primme)
-                    elif len(resultatTemporel) > 64:
-                        m1primme = bin(int(resultatTemporel, 2))[3:].zfill(64)
-                        tableauMotsFichierPermutation.append(m1primme)
-                    #print(i)
+                    if(int(resultatTemporel, 2) >= 2**64):
+                        m1primme = bin(int(resultatTemporel,2) - 2**64)
+                        tableauMotsFichierPermutation.append(bin(int(m1primme, 2))[2:].zfill(64))
+                    else:
+                        m1primme = bin(int(resultatTemporel,2))
+                        tableauMotsFichierPermutation.append(bin(int(m1primme, 2))[2:].zfill(64))
 
                     #TOURNÉE
                     m2R = tableauMotsFichierMixe[i+1]
@@ -188,28 +189,25 @@ def chiffrementThreeFish(tableauClesDeTournee, tableauMotsFichier, tailleBlocs):
                         m2Rchar = m2R[0]
                         m2R = m2R[1:] + m2Rchar
 
-                    m2prime = bin(int(m1primme, 2) ^ int(m2R, 2))[2:].zfill(64)
-                    tableauMotsFichierPermutation.append(m2prime)
+                    m2prime = bin(int(m1primme, 2) ^ int(m2R, 2))
+                    tableauMotsFichierPermutation.append(bin(int(m2prime, 2))[2:].zfill(64))
                 else:
                     tableauMotsFichierPermutation.append(bin(int(tableauMotsFichierMixe[i], 2))[2:].zfill(64))
-                #print(tableauMotsFichierPermutation[i])
-                #print(tableauMotsFichierPermutation[i+1])
 
             #PERMUTATION
             tableauMotsFichierMixe = tableauMotsFichierPermutation[::-1]
+            #print("Hash chiffrement post inverse : "+str(hashlib.sha224(str(tableauMotsFichierMixe)).hexdigest()))
+
             tableauMotsFichierPermutation = []
 
-        tableauMotsFichierMixe2 = []
-        for i in range(len(tableauMotsFichier)):
-            tableauMotsFichierMixe2.append(bin(int(tableauMotsFichierMixe[i], 2) ^ int(tableauClesDeTournee[y][i%(tailleBlocs/64)], 2))[2:].zfill(64))
+        #print("Hash pre insertion: "+str(hashlib.sha224(str(tableauMotsFichierMixe)).hexdigest()))
 
-        #print("USED KEY Nº"+str(y)+": ")
-        #for i in range(len(tableauClesDeTournee[y])):
-        #    print tableauClesDeTournee[y][i]
+
+        tableauMotsFichierMixe2 = []
+        for k in range(len(tableauMotsFichier)):
+            tableauMotsFichierMixe2.append(bin(int(tableauMotsFichierMixe[k], 2) ^ int(tableauClesDeTournee[y][k%(tailleBlocs/64)], 2))[2:].zfill(64))
 
         tableauMotsFichierMixe = tableauMotsFichierMixe2
-    print("Hash fichier chiffré : "+str(hashlib.sha224(str(tableauMotsFichierMixe)).hexdigest()))
-    #print("LENGTH MIXE: "+str(len(tableauMotsFichierMixe)))
 
     return tableauMotsFichierMixe
     #print("=========Tableau dernière tournée==========")
@@ -228,17 +226,103 @@ def chiffrementThreeFish(tableauClesDeTournee, tableauMotsFichier, tailleBlocs):
     #    tableauBlocsFichierMixe.append(bin(int(tableauMotsFichiertailleBloc[i], 2) ^ int(tableauClesDeTourneeTailleBloc[i], 2))[2:].zfill(tailleBlocs))
     #    print tableauBlocsFichierMixe[i]
 
-def dechiffrementThreeFish(tableauClesDeTournee, tableauMotsFichier, tailleBlocs):
-    print("hello")
+def dechiffrementThreeFish(tableauClesDeTournee, tableauMotsFichier, tailleBlocs, tailleDernierBloc):
 
     tableauMotsFichierMixe = []
     tableauMotsFichierPermutation = []
 
     #Première permutation
     for i in range(len(tableauMotsFichier)):
-        tableauMotsFichierMixe.append(bin(int(tableauMotsFichier[i], 2) ^ int(tableauClesDeTournee[19][i%(tailleBlocs/64)], 2))[2:].zfill(64))
+        print(i)
+        tableauMotsFichierPermutation.append(bin(int(tableauMotsFichier[i], 2) ^ int(tableauClesDeTournee[19][i%(tailleBlocs/64)], 2))[2:].zfill(64))
+
+    print("Hash pre permutation: "+str(hashlib.sha224(str(tableauMotsFichierPermutation)).hexdigest()))
+
+    for y in range(18, -1, -1):
+
+        print("---y = "+str(y)+" ---")
+
+        for z in range(0, 4, 1):
+
+            #PERMUTATION
+            tableauMotsFichierMixe = tableauMotsFichierPermutation[::-1]
+
+            #print("Hash post permutation: "+str(hashlib.sha224(str(tableauMotsFichierMixe)).hexdigest()))
+
+            tableauMotsFichierPermutation = []
+
+            for i in range(0, len(tableauMotsFichier), 2):
+
+                if i != len(tableauMotsFichier)-1:
+                    m2R = bin(int(tableauMotsFichierMixe[i], 2) ^ int(tableauMotsFichierMixe[i+1], 2))[2:].zfill(64)
+
+                    #TOURNÉE INVERSE
+                    for j in range(0, 48, 1):
+                        m2Rchar = m2R[63]
+                        m2R = m2Rchar + m2R[:63]
+
+                    m2 = m2R
+                    temp = int(tableauMotsFichierMixe[i], 2) - int(m2, 2)
+                    if temp < 0:
+                        m1 = temp + 2**64
+                    else:
+                        m1 = temp
+
+                    tableauMotsFichierPermutation.append(bin(m1)[2:].zfill(64))
+                    tableauMotsFichierPermutation.append(m2)
+                else:
+                    tableauMotsFichierPermutation.append(tableauMotsFichierMixe[i])
+
+        print("Hash post insertion: "+str(hashlib.sha224(str(tableauMotsFichierPermutation)).hexdigest()))
+
+        tableauMotsFichierMixe2 = []
+
+        if y == 0:
+            for i in range(len(tableauMotsFichier)):
+                if i != len(tableauMotsFichier)-1:
+                    print(i)
+                    tableauMotsFichierMixe2.append(bin(int(tableauMotsFichierPermutation[i], 2) ^ int(tableauClesDeTournee[y][i%(tailleBlocs/64)], 2))[2:].zfill(64))
+                    print(bin(int(tableauMotsFichierPermutation[i], 2) ^ int(tableauClesDeTournee[y][i%(tailleBlocs/64)], 2))[2:].zfill(64))
+                    print("Hash fichier original PRAY : "+str(hashlib.sha224(str(tableauMotsFichierMixe2[i])).hexdigest()))
+
+                else:
+                    tableauMotsFichierMixe2.append(bin(int(tableauMotsFichierPermutation[i], 2) ^ int(tableauClesDeTournee[y][i%(tailleBlocs/64)], 2))[2:].zfill(int(tailleDernierBloc)))
+                    print(bin(int(tableauMotsFichierPermutation[i], 2) ^ int(tableauClesDeTournee[y][i%(tailleBlocs/64)], 2))[2:].zfill(int(tailleDernierBloc)))
+                    print("Hash fichier original PRAYFIN : "+str(hashlib.sha224(str(tableauMotsFichierMixe2[i])).hexdigest()))
+
+            tableauMotsFichierPermutation = tableauMotsFichierMixe2
+        else:
+            for i in range(len(tableauMotsFichier)):
+                tableauMotsFichierMixe2.append(bin(int(tableauMotsFichierPermutation[i], 2) ^ int(tableauClesDeTournee[y][i%(tailleBlocs/64)], 2))[2:].zfill(64))
+            tableauMotsFichierPermutation = tableauMotsFichierMixe2
 
 
+    tableauMotsFichierMixe2 = []
+    '''
+    for i in range(len(tableauMotsFichier)):
+        tableauMotsFichierMixe2.append(bin(int(tableauMotsFichierPermutation[i], 2) ^ int(tableauClesDeTournee[0][i%(tailleBlocs/64)], 2))[2:].zfill(64))
+    print("Hash fichier mixe2 : "+str(hashlib.sha224(str(tableauMotsFichierMixe2)).hexdigest()))
+
+    tableauMotsFichierPermutation = tableauMotsFichierMixe2
+    
+    tableauMotsFichierMixe2 = []
+
+    for i in range(len(tableauMotsFichier)):
+        if i != len(tableauMotsFichier)-1:
+            print "wololo "+str(i)
+            tableauMotsFichierMixe2.append(bin(int(tableauMotsFichierPermutation[i], 2) ^ int(tableauClesDeTournee[0][i%(tailleBlocs/64)], 2))[2:].zfill(64))
+            print("Hash fichier mixe2 : "+str(hashlib.sha224(str(tableauMotsFichierMixe2[i])).hexdigest()))
+
+        else:
+            print "WAHLLAH "+str(i)
+            tableauMotsFichierMixe2.append(bin(int(tableauMotsFichierPermutation[i], 2) ^ int(tableauClesDeTournee[0][i%(tailleBlocs/64)], 2))[2:])
+            print("Hash fichier mixe2 : "+str(hashlib.sha224(str(tableauMotsFichierMixe2[i])).hexdigest()))
+
+    tableauMotsFichierPermutation = tableauMotsFichierMixe2
+    '''
+    print("Hash fichier déchiffré : "+str(hashlib.sha224(str(tableauMotsFichierPermutation)).hexdigest()))
+
+    return tableauMotsFichierPermutation
 
 def lectureFichier(path):
 
@@ -290,7 +374,7 @@ def mainThreeFishChiffrement():
 
     print "Vous avez choisi des blocs de " + str(tailleBlocs) + " bits"
 
-    tableaufichierChiffre = chiffrementThreeFish(genererCles("", "", "", tailleBlocs), lectureFichier("~/Desktop/myfile.rtf"), tailleBlocs)
+    tableaufichierChiffre = chiffrementThreeFish(genererCles("", "", "", tailleBlocs), lectureFichier("~/Desktop/myfile2.png"), tailleBlocs)
 
     mainThreeFishDechiffrement(tableaufichierChiffre)
 
@@ -327,7 +411,12 @@ def mainThreeFishDechiffrement(tableaufichierChiffre):
         cleString = str(raw_input("Quelle est la clé de chiffrement ?"))
         reponse = False
 
-    dechiffrementThreeFish(genererCles(t0, t1, cleString, tailleBlocs), tableaufichierChiffre, tailleBlocs)
+    reponse = True
+    while reponse:
+        tailleDernierBloc = str(raw_input("Quelle est la taille du dernier bloc ?"))
+        reponse = False
+
+    dechiffrementThreeFish(genererCles(t0, t1, cleString, tailleBlocs), tableaufichierChiffre, tailleBlocs, tailleDernierBloc)
 
 
 loop = True
@@ -359,6 +448,21 @@ while loop:
         testarray =[1, 2]
         print(hashlib.sha224(str(testarray)).hexdigest())
         '''
+        m2R = "0001011000111010011100010001101101011010011100000110100001110111"
+        for j in range(0, 5, 1):
+            m2Rchar = m2R[63]
+            m2R = m2Rchar + m2R[:63]
+
+        print(m2R)
+
+        a = "01011"
+        print (bin(int(a, 2)))
+
+        resultat = bin(int("0101010101100101010101101010101010110111111010101010110111111111", 2) ^ int("0111011101110111011001110111011011011101101110111011101101101101", 2))[2:].zfill(64)
+        print(resultat)
+        resultat2 = bin(int("0101010101100101010101101010101010110111111010101010110111111111", 2) ^ int(resultat, 2))[2:].zfill(64)
+        print(resultat2)
+
         mainThreeFishChiffrement()
         #genererCles("0101001111010010001111110001100110000001010111111000001101001111", "0100011101001110001011010010000100110011101000000011000101100110", "10010111100101000111110111110001011111100011110000101000101010100001100110101110101000100101001011111100101011011110010010100001110010011011010111001001100000010011010110010011001001001001010110111101011101001001101010110110101101011000011010001011111001011110000100101010100101110100111010101011011110000111100101011001", 256)
 
